@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Tre Flip — The Whole Body Guide</title>
+<meta name="theme-color" content="#06060c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #06060c;
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-hover: rgba(255, 255, 255, 0.07);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-hover: rgba(255, 255, 255, 0.14);
+    --glass-blur: 24px;
+    --text: #f0f0f8;
+    --text-dim: #9898b0;
+    --text-muted: #5a5a72;
+    --cyan: #00e5ff;
+    --cyan-glow: rgba(0, 229, 255, 0.3);
+    --green: #34d399;
+    --green-glow: rgba(52, 211, 153, 0.3);
+    --purple: #a78bfa;
+    --amber: #fbbf24;
+    --amber-glow: rgba(251, 191, 36, 0.3);
+    --neon: #39ff14;
+    --neon-glow: rgba(57, 255, 20, 0.25);
+    --red: #f87171;
+    --red-glow: rgba(248, 113, 113, 0.3);
+    --radius: 20px;
+    --radius-sm: 14px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', -apple-system, sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Ambient Background ─── */
+  .ambient {
+    position: fixed; inset: 0; z-index: 0;
+    overflow: hidden; pointer-events: none;
+  }
+  .orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(100px); opacity: 0.3;
+    will-change: transform;
+    animation: drift 20s ease-in-out infinite alternate;
+  }
+  .orb-1 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, var(--cyan) 0%, transparent 70%);
+    top: -100px; left: -80px;
+  }
+  .orb-2 {
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, var(--purple) 0%, transparent 70%);
+    top: 40%; right: -120px;
+    animation-delay: -7s; animation-duration: 25s;
+  }
+  .orb-3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, var(--amber) 0%, transparent 70%);
+    bottom: 10%; left: -60px;
+    animation-delay: -13s; animation-duration: 22s;
+  }
+  .orb-4 {
+    width: 250px; height: 250px;
+    background: radial-gradient(circle, var(--neon) 0%, transparent 70%);
+    top: 20%; left: 50%;
+    animation-delay: -4s; animation-duration: 18s;
+  }
+  @keyframes drift {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 30px) scale(0.95); }
+    100% { transform: translate(15px, 15px) scale(1.02); }
+  }
+
+  /* ─── Noise Texture ─── */
+  .noise {
+    position: fixed; inset: 0; z-index: 1;
+    pointer-events: none; opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-repeat: repeat; background-size: 256px;
+  }
+
+  /* ─── App Shell ─── */
+  .app {
+    position: relative; z-index: 2;
+    max-width: 720px; margin: 0 auto;
+    padding: 24px 16px 60px;
+    padding-top: max(24px, env(safe-area-inset-top));
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  /* ─── Glass Card ─── */
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    position: relative; overflow: hidden;
+    padding: 20px 22px;
+  }
+  .glass::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    pointer-events: none;
+  }
+
+  /* ─── Scroll Reveal ─── */
+  .reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── Progress Track ─── */
+  .progress-track {
+    position: sticky; top: 0; z-index: 100;
+    padding: 12px 0 10px;
+    background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .progress-dots {
+    display: flex; align-items: center;
+    justify-content: center; gap: 6px;
+  }
+  .progress-dot {
+    width: 8px; height: 8px; border-radius: 4px;
+    transition: all 0.3s; cursor: pointer;
+    border: none; padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .progress-dot.active { width: 24px; box-shadow: 0 0 10px currentColor; }
+  .progress-connector {
+    width: 12px; height: 1px;
+    background: rgba(255,255,255,0.08); flex-shrink: 0;
+  }
+
+  /* ─── Header ─── */
+  .header { text-align: center; padding: 12px 0 16px; }
+  .header h1 {
+    font-size: 2rem; font-weight: 800;
+    letter-spacing: -1px; line-height: 1.1;
+    background: linear-gradient(135deg, var(--cyan), var(--neon), var(--amber));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 8s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .header .subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem; color: var(--text-muted);
+    margin-top: 8px; letter-spacing: 0.5px;
+  }
+  .header .divider {
+    width: 48px; height: 2px; margin: 14px auto 0;
+    background: linear-gradient(90deg, var(--cyan), var(--neon));
+    border-radius: 1px; opacity: 0.5;
+  }
+
+  /* ─── Typography ─── */
+  .section-label {
+    font-size: 0.6rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--text-muted); margin-bottom: 6px;
+  }
+  h2 {
+    font-size: 1.25rem; font-weight: 700;
+    letter-spacing: -0.5px; margin-bottom: 10px;
+  }
+  h3 {
+    font-size: 1rem; font-weight: 600;
+    letter-spacing: -0.3px; margin-bottom: 8px;
+  }
+  p { font-size: 0.88rem; line-height: 1.65; color: var(--text-dim); margin-bottom: 8px; }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--text); font-weight: 600; }
+
+  /* ─── Accent Borders ─── */
+  .border-cyan { border-left: 3px solid var(--cyan); }
+  .border-green { border-left: 3px solid var(--green); }
+  .border-neon { border-left: 3px solid var(--neon); }
+  .border-amber { border-left: 3px solid var(--amber); }
+  .border-red { border-left: 3px solid var(--red); }
+
+  /* ─── The Neon Glow Card (Phase 3 / Key Insight) ─── */
+  .glass-neon {
+    border: 1px solid rgba(57, 255, 20, 0.25);
+    box-shadow: 0 0 30px rgba(57, 255, 20, 0.06), inset 0 0 30px rgba(57, 255, 20, 0.02);
+  }
+  .glass-neon::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--neon), transparent);
+    opacity: 0.3; pointer-events: none;
+  }
+
+  /* ─── Callout Box ─── */
+  .callout {
+    background: rgba(255,255,255,0.03);
+    border-left: 3px solid var(--cyan);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px; margin: 12px 0;
+  }
+  .callout.callout-neon { border-left-color: var(--neon); }
+  .callout.callout-amber { border-left-color: var(--amber); }
+  .callout.callout-red { border-left-color: var(--red); }
+  .callout p { font-size: 0.84rem; }
+  .callout .cue {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem; color: var(--neon);
+    font-weight: 500;
+  }
+
+  /* ─── Truth Number Badge ─── */
+  .truth-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    font-size: 0.78rem; font-weight: 700;
+    margin-right: 10px; flex-shrink: 0;
+  }
+
+  /* ─── Spec Table ─── */
+  .spec-table {
+    width: 100%; border-collapse: collapse; margin: 8px 0;
+  }
+  .spec-table td {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.74rem; padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+  .spec-table td:first-child {
+    color: var(--text-muted); width: 110px;
+    font-weight: 500; padding-right: 12px;
+  }
+  .spec-table td:last-child { color: var(--text-dim); }
+  .spec-table .highlight { color: var(--neon); font-weight: 500; }
+
+  /* ─── Drill Grid ─── */
+  .drill-grid {
+    display: grid; gap: 12px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 540px) {
+    .drill-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .drill-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+  }
+  .drill-card h4 {
+    font-size: 0.84rem; font-weight: 600;
+    margin-bottom: 6px; display: flex;
+    align-items: center; gap: 8px;
+  }
+  .drill-card .reps {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem; color: var(--cyan);
+    font-weight: 500;
+  }
+  .drill-card p { font-size: 0.8rem; line-height: 1.55; }
+
+  /* ─── Fail Mode Table ─── */
+  .fail-table {
+    width: 100%; border-collapse: collapse;
+  }
+  .fail-table th {
+    font-size: 0.62rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-muted); text-align: left;
+    padding: 8px 8px 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .fail-table td {
+    font-size: 0.8rem; padding: 10px 8px 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-dim); vertical-align: top;
+  }
+  .fail-table td:first-child { color: var(--red); font-weight: 500; width: 35%; }
+  .fail-table td:last-child { color: var(--green); }
+
+  /* ─── Mantra Cards ─── */
+  .mantra-grid {
+    display: grid; gap: 12px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 540px) {
+    .mantra-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  .mantra-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-sm);
+    padding: 16px; text-align: center;
+  }
+  .mantra-card .label {
+    font-size: 0.6rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .mantra-card .phrase {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem; line-height: 1.5;
+    font-weight: 400;
+  }
+
+  /* ─── SVG Containers ─── */
+  .diagram-wrap {
+    width: 100%; margin: 16px 0 8px;
+    display: flex; justify-content: center;
+  }
+  .diagram-wrap svg {
+    width: 100%; max-width: 500px; height: auto;
+  }
+  .diagram-caption {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem; color: var(--text-muted);
+    text-align: center; margin-top: 4px;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    text-align: center; padding: 20px 0 0;
+  }
+  .footer p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem; color: var(--text-muted);
+  }
+
+  /* ─── Truth Title Flex ─── */
+  .truth-header {
+    display: flex; align-items: center; margin-bottom: 10px;
+  }
+  .truth-header h2 { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<!-- Ambient -->
+<div class="ambient">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+</div>
+<div class="noise"></div>
+
+<div class="app">
+
+  <!-- Progress Track -->
+  <nav class="progress-track" aria-label="Section progress">
+    <div class="progress-dots">
+      <button class="progress-dot active" data-section="0" style="background:var(--cyan);color:var(--cyan)" aria-label="Top"></button>
+      <div class="progress-connector"></div>
+      <button class="progress-dot" data-section="1" style="background:var(--text-muted);color:var(--cyan)" aria-label="Shoulders"></button>
+      <div class="progress-connector"></div>
+      <button class="progress-dot" data-section="2" style="background:var(--text-muted);color:var(--green)" aria-label="Eyes"></button>
+      <div class="progress-connector"></div>
+      <button class="progress-dot" data-section="3" style="background:var(--text-muted);color:var(--neon)" aria-label="Front Foot"></button>
+      <div class="progress-connector"></div>
+      <button class="progress-dot" data-section="4" style="background:var(--text-muted);color:var(--amber)" aria-label="The Catch"></button>
+      <div class="progress-connector"></div>
+      <button class="progress-dot" data-section="5" style="background:var(--text-muted);color:var(--purple)" aria-label="Drills"></button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- HEADER -->
+  <!-- ═══════════════════════════════════════ -->
+  <header class="header" data-nav="0">
+    <h1>Tre Flip</h1>
+    <div class="subtitle">the whole body guide / goofy / crooked setup</div>
+    <div class="divider"></div>
+  </header>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- THE PROBLEM -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal border-red">
+    <p><strong>Your scoop is clean. Your flick is there. But your front foot disappears into space and never comes back.</strong></p>
+    <p>That's not a foot problem. That's a body problem. When your shoulders rotate or your eyes chase the board, your front foot follows them away from the deck. Fix the body, and the feet fix themselves.</p>
+    <p>This guide covers <strong>three truths</strong> about your upper body, then shows you exactly what your front foot does when everything above it is right. No seven-phase breakdowns. No over-thinking. Just what your body needs to know.</p>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- YOUR SETUP -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal">
+    <div class="section-label">Your Dedicated Setup</div>
+    <table class="spec-table">
+      <tr><td>Deck</td><td>Crooked</td></tr>
+      <tr><td>Trucks</td><td>Thunder 148s</td></tr>
+      <tr><td>Back Truck</td><td><span class="highlight">100a boardside</span> + Riptide 97.5a roadside &mdash; locked for scoop</td></tr>
+      <tr><td>Front Truck</td><td>ACE 94a hard low + <span class="highlight">Bones 91a medium top</span> &mdash; soft for catch</td></tr>
+      <tr><td>Wheels</td><td>54mm full conical 100a</td></tr>
+      <tr><td>Bearings</td><td>Bones Swiss precision</td></tr>
+    </table>
+    <div class="callout" style="margin-top:12px;margin-bottom:0">
+      <p><strong>Why the split matters:</strong> The back truck is locked dead &mdash; every ounce of scoop force transfers to the tail. The front truck is soft &mdash; when your front foot lands slightly off-center on the catch, the truck absorbs it instead of bucking you off. This setup is built for the catch.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TRUTH 1: SHOULDERS -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal border-cyan" data-nav="1">
+    <div class="section-label" style="color:var(--cyan)">Truth 1</div>
+    <div class="truth-header">
+      <span class="truth-badge" style="background:var(--cyan);color:var(--bg)">1</span>
+      <h2>Your Shoulders Aim Your Feet</h2>
+    </div>
+    <p>Your shoulders are the steering wheel. Wherever they point at takeoff is where your feet will land. If your shoulders open even 15 degrees during the scoop, your front foot follows that rotation out into space. It's not a foot problem &mdash; it's your shoulders leaving the grid.</p>
+    <p><strong>The fix is dead simple:</strong> lock your shoulders square to your direction of travel. They don't move. Not before, not during, not after. Your back ankle does the scoop. Your hips stay level. Your shoulders stay <em>exactly</em> where they started. Think of your belt buckle &mdash; it should face the same direction when you land as when you popped.</p>
+
+    <!-- SVG: Shoulders Overhead View -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 420 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-cyan" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M1,1 L7,4 L1,7" stroke="#00e5ff" stroke-width="1.5" fill="none"/>
+          </marker>
+          <marker id="arr-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M1,1 L7,4 L1,7" stroke="#f87171" stroke-width="1.5" fill="none"/>
+          </marker>
+          <marker id="arr-green" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M1,1 L7,4 L1,7" stroke="#34d399" stroke-width="1.5" fill="none"/>
+          </marker>
+          <marker id="arr-neon" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M1,1 L7,4 L1,7" stroke="#39ff14" stroke-width="1.5" fill="none"/>
+          </marker>
+          <marker id="arr-amber" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M1,1 L7,4 L1,7" stroke="#fbbf24" stroke-width="1.5" fill="none"/>
+          </marker>
+        </defs>
+
+        <!-- Labels -->
+        <text x="105" y="18" fill="#f87171" font-family="DM Mono" font-size="10" text-anchor="middle" font-weight="500">WRONG</text>
+        <text x="315" y="18" fill="#34d399" font-family="DM Mono" font-size="10" text-anchor="middle" font-weight="500">RIGHT</text>
+
+        <!-- LEFT: Wrong — shoulders rotated -->
+        <!-- Board (top-down, angled) -->
+        <rect x="55" y="60" width="100" height="28" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" stroke-width="1" transform="rotate(-8 105 74)"/>
+        <!-- Direction arrow -->
+        <line x1="105" y1="180" x2="105" y2="145" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr-cyan)" stroke-dasharray="3,3"/>
+        <text x="105" y="194" fill="#5a5a72" font-family="DM Mono" font-size="8" text-anchor="middle">travel</text>
+
+        <!-- Shoulder bar — rotated (BAD) -->
+        <line x1="65" y1="100" x2="145" y2="85" stroke="#f87171" stroke-width="3" stroke-linecap="round"/>
+        <!-- Rotation arc -->
+        <path d="M130,95 Q155,80 140,65" stroke="#f87171" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
+        <text x="158" y="72" fill="#f87171" font-family="DM Mono" font-size="8">15°</text>
+
+        <!-- Hips (following) -->
+        <line x1="75" y1="118" x2="135" y2="108" stroke="rgba(248,113,113,0.4)" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- Front foot flying out -->
+        <ellipse cx="58" cy="56" rx="14" ry="8" fill="rgba(248,113,113,0.15)" stroke="#f87171" stroke-width="1" transform="rotate(-20 58 56)"/>
+        <path d="M70,60 Q40,30 20,40" stroke="#f87171" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arr-red)"/>
+        <text x="10" y="36" fill="#f87171" font-family="DM Mono" font-size="7">foot gone</text>
+
+        <!-- RIGHT: Correct — shoulders square -->
+        <!-- Board (top-down, straight) -->
+        <rect x="265" y="60" width="100" height="28" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        <!-- Direction arrow -->
+        <line x1="315" y1="180" x2="315" y2="145" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr-cyan)" stroke-dasharray="3,3"/>
+        <text x="315" y="194" fill="#5a5a72" font-family="DM Mono" font-size="8" text-anchor="middle">travel</text>
+
+        <!-- Shoulder bar — square (GOOD) -->
+        <line x1="275" y1="95" x2="355" y2="95" stroke="#34d399" stroke-width="3" stroke-linecap="round"/>
+        <!-- Lock indicators -->
+        <circle cx="275" cy="95" r="3" fill="none" stroke="#34d399" stroke-width="1"/>
+        <circle cx="355" cy="95" r="3" fill="none" stroke="#34d399" stroke-width="1"/>
+        <text x="370" y="98" fill="#34d399" font-family="DM Mono" font-size="7">locked</text>
+
+        <!-- Hips (level) -->
+        <line x1="285" y1="115" x2="345" y2="115" stroke="rgba(52,211,153,0.4)" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- Front foot — stays over board -->
+        <ellipse cx="280" cy="56" rx="14" ry="8" fill="rgba(52,211,153,0.15)" stroke="#34d399" stroke-width="1"/>
+        <!-- Foot returns to board -->
+        <path d="M280,48 Q278,38 282,42" stroke="#34d399" stroke-width="1.5" fill="none"/>
+        <text x="280" y="36" fill="#34d399" font-family="DM Mono" font-size="7" text-anchor="middle">foot stays</text>
+
+        <!-- Center divider -->
+        <line x1="210" y1="25" x2="210" y2="200" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="diagram-caption">overhead view &mdash; shoulders rotated (left) vs. locked square (right)</div>
+
+    <div class="callout" style="margin-bottom:0">
+      <p class="cue">"Belt buckle forward. Shoulders are concrete."</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TRUTH 2: EYES -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal border-green" data-nav="2">
+    <div class="section-label" style="color:var(--green)">Truth 2</div>
+    <div class="truth-header">
+      <span class="truth-badge" style="background:var(--green);color:var(--bg)">2</span>
+      <h2>Your Eyes Pick the Landing</h2>
+    </div>
+    <p>Your feet go where your eyes go. If you track the board spinning beneath you with hard focus, your body chases it. If you look away in fear, your feet bail. Neither works.</p>
+    <p><strong>Soft focus, straight down.</strong> Don't track the board's corkscrew rotation &mdash; you can't follow it anyway. Instead, relax your eyes and look at the area where the board left from. Your <strong>peripheral vision</strong> processes motion faster than your central vision. It will catch the flash of grip tape reappearing. That flash is your "now" signal.</p>
+    <p>Your eyes should be aimed at a point between your feet &mdash; roughly where the front bolts are. Not at the tail, not at the nose, not at the ground six feet away. Right between your feet. Your peripheral vision handles everything else.</p>
+
+    <!-- SVG: Eye Focus Zone -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 340 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Side view: skater silhouette simplified -->
+        <!-- Ground -->
+        <line x1="20" y1="170" x2="320" y2="170" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+        <!-- Board -->
+        <rect x="100" y="158" width="90" height="8" rx="4" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+
+        <!-- Simplified body line (standing on board) -->
+        <!-- Legs -->
+        <line x1="130" y1="158" x2="145" y2="120" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="165" y1="158" x2="155" y2="120" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-linecap="round"/>
+        <!-- Torso -->
+        <line x1="150" y1="120" x2="148" y2="75" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-linecap="round"/>
+        <!-- Head -->
+        <circle cx="148" cy="62" r="10" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
+        <!-- Shoulders -->
+        <line x1="130" y1="80" x2="168" y2="80" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- Eye line — soft focus down at bolts area -->
+        <line x1="148" y1="62" x2="140" y2="155" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
+
+        <!-- Focus zone circle at bolt area -->
+        <ellipse cx="140" cy="158" rx="25" ry="10" fill="rgba(52,211,153,0.08)" stroke="var(--green)" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="140" y="190" fill="var(--green)" font-family="DM Mono" font-size="8" text-anchor="middle">soft focus zone</text>
+
+        <!-- Peripheral vision cone (wide, faded) -->
+        <path d="M148,62 L80,160 L210,160 Z" fill="rgba(52,211,153,0.03)" stroke="none"/>
+        <path d="M80,160 Q145,130 210,160" stroke="rgba(52,211,153,0.15)" stroke-width="1" fill="none" stroke-dasharray="3,3"/>
+        <text x="250" y="148" fill="rgba(52,211,153,0.5)" font-family="DM Mono" font-size="7">peripheral</text>
+        <text x="250" y="158" fill="rgba(52,211,153,0.5)" font-family="DM Mono" font-size="7">catches the</text>
+        <text x="250" y="168" fill="rgba(52,211,153,0.5)" font-family="DM Mono" font-size="7">grip flash</text>
+
+        <!-- WRONG: eyes tracking the spin (red) -->
+        <path d="M148,62 Q180,90 200,130 Q210,150 195,158" stroke="var(--red)" stroke-width="1" fill="none" stroke-dasharray="3,2" opacity="0.5"/>
+        <text x="210" y="125" fill="var(--red)" font-family="DM Mono" font-size="7" opacity="0.6">don't chase</text>
+        <text x="210" y="134" fill="var(--red)" font-family="DM Mono" font-size="7" opacity="0.6">the spin</text>
+      </svg>
+    </div>
+    <div class="diagram-caption">side view &mdash; soft focus down at the bolt zone, peripheral vision catches the grip flash</div>
+
+    <div class="callout" style="border-left-color:var(--green);margin-bottom:0">
+      <p class="cue" style="color:var(--green)">"Eyes down. Soft. Let the board come to you."</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TRUTH 3: HIPS (THE ANCHOR) -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal border-amber">
+    <div class="section-label" style="color:var(--amber)">Truth 3</div>
+    <div class="truth-header">
+      <span class="truth-badge" style="background:var(--amber);color:var(--bg)">3</span>
+      <h2>Your Hips Are the Anchor</h2>
+    </div>
+    <p>Think of your body as a tree. Shoulders are the canopy &mdash; locked, wide, still. Hips are the trunk &mdash; centered, level, calm. Everything below the hips has freedom: your back ankle scoops, your front ankle flicks, your knees pull up. But the hips don't move.</p>
+    <p>The scoop generates a strong backside rotational pull on your body. Your hips want to follow it. <strong>Don't let them.</strong> The twist stores in your core and dissipates. Your hips stay level. If you land with your body rotated 45 degrees, it's not a foot problem or a scoop problem &mdash; it's your hips following the scoop.</p>
+
+    <div class="callout callout-amber" style="margin-bottom:0">
+      <p class="cue" style="color:var(--amber)">"Tree trunk. Level. The storm is below you."</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- THE FRONT FOOT -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass glass-neon reveal" data-nav="3" style="padding:24px;">
+    <div class="section-label" style="color:var(--neon)">The Front Foot</div>
+    <h2 style="font-size:1.35rem;">When Everything Above Is Right, This Is All Your Front Foot Does</h2>
+    <p>If your shoulders are locked, your eyes are soft, and your hips are still &mdash; your front foot only has to do three simple things in order. No compartmentalization. Just a natural sequence that flows from the right body position.</p>
+
+    <!-- The Three Moves -->
+    <div style="margin-top:16px;display:flex;flex-direction:column;gap:14px;">
+
+      <!-- Move 1: Tap -->
+      <div class="callout callout-neon">
+        <h3 style="color:var(--neon);font-size:0.9rem;">1. Tap at 12:30</h3>
+        <p>Your front foot rolls off the toe-side edge near the nose. Not a kick &mdash; a <strong>tap</strong>. Your scoop is already doing 60&ndash;70% of the flip work. The front foot just adds the last bit of flip energy. Exit angle is 12:30 on a clock face &mdash; straight forward with a tiny bit of toe-side. Any more lateral than that and you get a double flip.</p>
+      </div>
+
+      <!-- Move 2: Curl -->
+      <div class="callout callout-neon">
+        <h3 style="color:var(--neon);font-size:0.9rem;">2. Curl to Your Knee</h3>
+        <p><strong>This is the move you're missing.</strong> The instant your foot leaves the board, it curls UP &mdash; not out. Toes point down. Your foot pulls back toward your front knee. It doesn't travel away from the board. It hovers directly above where the nose is going to be. Think of it like closing a door &mdash; it swings shut, not open.</p>
+        <p>The distance between your hovering foot and the board should be <strong>inches, not feet</strong>. If your foot is a foot away from the deck, you curled too late or your shoulders pulled it out.</p>
+      </div>
+
+      <!-- Move 3: Stomp -->
+      <div class="callout callout-neon">
+        <h3 style="color:var(--neon);font-size:0.9rem;">3. See Grip, Stomp</h3>
+        <p>Your peripheral vision catches the flash of grip tape completing the rotation. That's your "now" signal. Drop your front foot straight down. Don't reach for the board &mdash; it's right there beneath your hovering foot. Stomp it. Your back foot follows immediately. Pinch both feet &mdash; front presses forward, back presses backward &mdash; to kill any residual spin.</p>
+        <p>Your soft front bushings (Bones 91a) absorb any slight off-center landing. The setup forgives you. <strong>Commit to the stomp.</strong></p>
+      </div>
+    </div>
+
+    <!-- THE MAIN DIAGRAM: Front Foot Arc -->
+    <div class="diagram-wrap" style="margin-top:20px;">
+      <svg viewBox="0 0 500 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Ground -->
+        <line x1="30" y1="220" x2="470" y2="220" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+        <!-- Board positions (ghosted at key moments) -->
+        <!-- Board at pop -->
+        <rect x="50" y="208" width="80" height="7" rx="3.5" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+        <!-- Board mid-rotation (tilted) -->
+        <rect x="185" y="200" width="80" height="7" rx="3.5" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" transform="rotate(-30 225 204)"/>
+        <!-- Board completing rotation -->
+        <rect x="310" y="195" width="80" height="7" rx="3.5" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" stroke-width="0.5" transform="rotate(-60 350 198)"/>
+        <!-- Board caught (level) -->
+        <rect x="390" y="208" width="80" height="7" rx="3.5" fill="rgba(57,255,20,0.08)" stroke="rgba(57,255,20,0.25)" stroke-width="0.8"/>
+
+        <!-- Phase labels -->
+        <text x="90" y="245" fill="var(--text-muted)" font-family="DM Mono" font-size="8" text-anchor="middle">TAP</text>
+        <text x="230" y="245" fill="var(--text-muted)" font-family="DM Mono" font-size="8" text-anchor="middle">CURL</text>
+        <text x="350" y="245" fill="var(--text-muted)" font-family="DM Mono" font-size="8" text-anchor="middle">HOVER</text>
+        <text x="430" y="245" fill="var(--text-muted)" font-family="DM Mono" font-size="8" text-anchor="middle">STOMP</text>
+
+        <!-- CORRECT PATH (solid neon) -->
+        <!-- Foot on board -->
+        <ellipse cx="78" cy="204" rx="16" ry="7" fill="rgba(57,255,20,0.12)" stroke="var(--neon)" stroke-width="1.2"/>
+        <!-- Foot leaves at 12:30, arcs up gently -->
+        <path d="M94,200 Q150,145 230,130 Q320,120 350,135" stroke="var(--neon)" stroke-width="2" fill="none"/>
+        <!-- Foot at hover (toes down) -->
+        <ellipse cx="350" cy="140" rx="14" ry="7" fill="rgba(57,255,20,0.15)" stroke="var(--neon)" stroke-width="1.5" transform="rotate(20 350 140)"/>
+        <!-- Arrow: toes pointing down -->
+        <line x1="355" y1="147" x2="358" y2="162" stroke="var(--neon)" stroke-width="1" marker-end="url(#arr-neon)" opacity="0.6"/>
+        <text x="368" y="160" fill="var(--neon)" font-family="DM Mono" font-size="7" opacity="0.7">toes down</text>
+
+        <!-- Hover zone band -->
+        <rect x="300" y="125" width="100" height="30" rx="6" fill="rgba(57,255,20,0.04)" stroke="rgba(57,255,20,0.12)" stroke-width="0.5" stroke-dasharray="3,2"/>
+        <text x="298" y="120" fill="rgba(57,255,20,0.5)" font-family="DM Mono" font-size="7">hover zone</text>
+
+        <!-- Drop to catch -->
+        <path d="M350,148 Q365,175 420,204" stroke="var(--neon)" stroke-width="2" fill="none" marker-end="url(#arr-neon)"/>
+        <!-- Foot on board (caught) -->
+        <ellipse cx="420" cy="204" rx="16" ry="7" fill="rgba(57,255,20,0.2)" stroke="var(--neon)" stroke-width="1.5"/>
+
+        <!-- WRONG PATH (dashed red) -->
+        <path d="M94,200 Q140,140 190,90 Q230,55 270,50" stroke="var(--red)" stroke-width="1.5" fill="none" stroke-dasharray="5,4" opacity="0.5"/>
+        <ellipse cx="275" cy="48" rx="12" ry="6" fill="rgba(248,113,113,0.08)" stroke="var(--red)" stroke-width="0.8" opacity="0.5"/>
+        <text x="292" y="42" fill="var(--red)" font-family="DM Mono" font-size="7" opacity="0.5">foot gone &mdash;</text>
+        <text x="292" y="52" fill="var(--red)" font-family="DM Mono" font-size="7" opacity="0.5">too far, too high</text>
+
+        <!-- Distance annotation (correct path) -->
+        <line x1="350" y1="150" x2="350" y2="205" stroke="rgba(57,255,20,0.2)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <text x="335" y="180" fill="rgba(57,255,20,0.4)" font-family="DM Mono" font-size="7" text-anchor="end">inches</text>
+
+        <!-- Distance annotation (wrong path) -->
+        <line x1="270" y1="55" x2="270" y2="205" stroke="rgba(248,113,113,0.12)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <text x="258" y="130" fill="rgba(248,113,113,0.3)" font-family="DM Mono" font-size="7" text-anchor="end">feet</text>
+
+        <!-- Grip flash indicator -->
+        <circle cx="430" cy="207" r="4" fill="none" stroke="var(--amber)" stroke-width="1">
+          <animate attributeName="r" values="4;8;4" dur="1.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <text x="445" y="200" fill="var(--amber)" font-family="DM Mono" font-size="7" opacity="0.7">grip flash</text>
+      </svg>
+    </div>
+    <div class="diagram-caption">side view &mdash; correct front foot arc (green) vs. foot kicking out (red dashed)</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TOP-DOWN BOARD VIEW -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal">
+    <div class="section-label">Top-Down View</div>
+    <h3>Where Your Front Foot Is At Each Moment</h3>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 360 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Board outline (wider nose, tapered tail for tre flip board shape) -->
+        <path d="M140,30 Q180,10 220,30 L225,60 L228,140 L230,220 L225,280 Q180,310 140,280 L135,220 L132,140 L135,60 Z"
+              fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+
+        <!-- Bolt dots -->
+        <circle cx="155" cy="65" r="2" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="205" cy="65" r="2" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="155" cy="260" r="2" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="205" cy="260" r="2" fill="rgba(255,255,255,0.15)"/>
+
+        <!-- Nose/Tail labels -->
+        <text x="180" y="24" fill="var(--text-muted)" font-family="DM Mono" font-size="8" text-anchor="middle">NOSE</text>
+        <text x="180" y="326" fill="var(--text-muted)" font-family="DM Mono" font-size="8" text-anchor="middle">TAIL</text>
+
+        <!-- Toe side / Heel side -->
+        <text x="248" y="165" fill="rgba(255,255,255,0.08)" font-family="DM Mono" font-size="7" text-anchor="start">toe</text>
+        <text x="110" y="165" fill="rgba(255,255,255,0.08)" font-family="DM Mono" font-size="7" text-anchor="end">heel</text>
+
+        <!-- Phase 1: Foot on board, behind front bolts, 35° angle, toes off toe-side -->
+        <ellipse cx="190" cy="95" rx="28" ry="12" fill="rgba(0,229,255,0.1)" stroke="var(--cyan)" stroke-width="1.2" transform="rotate(-35 190 95)"/>
+        <text x="265" y="90" fill="var(--cyan)" font-family="DM Mono" font-size="8">start</text>
+        <text x="265" y="100" fill="var(--cyan)" font-family="DM Mono" font-size="8">behind bolts</text>
+        <line x1="230" y1="88" x2="260" y2="92" stroke="rgba(0,229,255,0.3)" stroke-width="0.5"/>
+
+        <!-- Phase 2: Foot sliding toward nose corner at 12:30 -->
+        <ellipse cx="210" cy="55" rx="26" ry="11" fill="rgba(52,211,153,0.08)" stroke="var(--green)" stroke-width="1" transform="rotate(-15 210 55)"/>
+        <text x="265" y="50" fill="var(--green)" font-family="DM Mono" font-size="8">tap</text>
+        <text x="265" y="60" fill="var(--green)" font-family="DM Mono" font-size="8">exits 12:30</text>
+        <line x1="240" y1="50" x2="260" y2="52" stroke="rgba(52,211,153,0.3)" stroke-width="0.5"/>
+
+        <!-- Arrow from Phase 1 to Phase 2 -->
+        <path d="M200,83 Q210,70 210,62" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none" marker-end="url(#arr-cyan)"/>
+
+        <!-- Phase 3: Foot OFF the board — directly above nose (dashed outline) -->
+        <ellipse cx="195" cy="45" rx="24" ry="10" fill="rgba(57,255,20,0.06)" stroke="var(--neon)" stroke-width="1.2" stroke-dasharray="4,3" transform="rotate(-5 195 45)"/>
+        <text x="60" y="40" fill="var(--neon)" font-family="DM Mono" font-size="8">hover</text>
+        <text x="60" y="50" fill="var(--neon)" font-family="DM Mono" font-size="8">above nose</text>
+        <line x1="105" y1="45" x2="168" y2="45" stroke="rgba(57,255,20,0.3)" stroke-width="0.5"/>
+        <!-- Small upward indicator -->
+        <text x="195" y="28" fill="rgba(57,255,20,0.4)" font-family="DM Mono" font-size="7" text-anchor="middle">(airborne)</text>
+
+        <!-- Phase 4: Foot back ON board, over front bolts -->
+        <ellipse cx="180" cy="70" rx="28" ry="12" fill="rgba(251,191,36,0.1)" stroke="var(--amber)" stroke-width="1.2" transform="rotate(-10 180 70)"/>
+        <text x="60" y="70" fill="var(--amber)" font-family="DM Mono" font-size="8">catch</text>
+        <text x="60" y="80" fill="var(--amber)" font-family="DM Mono" font-size="8">on the bolts</text>
+        <line x1="100" y1="72" x2="152" y2="72" stroke="rgba(251,191,36,0.3)" stroke-width="0.5"/>
+
+        <!-- Arrow from hover to catch -->
+        <path d="M193,55 Q187,60 182,64" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none" marker-end="url(#arr-amber)"/>
+
+        <!-- Back foot position (for context, stays in scoop zone) -->
+        <ellipse cx="170" cy="265" rx="24" ry="11" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" stroke-width="0.8" transform="rotate(15 170 265)"/>
+        <text x="95" y="270" fill="var(--text-muted)" font-family="DM Mono" font-size="7">back foot</text>
+        <text x="95" y="280" fill="var(--text-muted)" font-family="DM Mono" font-size="7">scoop pocket</text>
+      </svg>
+    </div>
+    <div class="diagram-caption">top-down &mdash; front foot path from start to catch. dashed = airborne hover above the nose.</div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- THE CONFIDENT CATCH -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal border-amber" data-nav="4">
+    <div class="section-label" style="color:var(--amber)">The Confident Catch</div>
+    <h2>Both Feet. No Fear. No Slip.</h2>
+    <p>The reason you're afraid to stomp is that your front foot is too far away when the board comes around. When your front foot is hovering <strong>inches above the nose</strong>, there's nothing to be afraid of. The board is right there. You just drop onto it.</p>
+    <p>The catch is <strong>both feet simultaneously</strong>. Front foot drops onto the front bolts. Back foot meets the back bolts at the same time or a split second after. The moment both feet touch grip, <strong>pinch</strong> &mdash; front foot presses toward the nose, back foot presses toward the tail. This grind pinch kills any residual spin energy so the board doesn't keep rotating under you. That's what prevents the slip-out.</p>
+    <p>Land over your bolts, not in the middle of the board. Bolts are where the trucks are &mdash; that's structural support. Landing in the middle flexes the deck and creates instability. <strong>Knees absorb. Landing should be quiet.</strong> If it's loud, you're stomping from too high or skipping the carry phase.</p>
+
+    <div class="callout callout-amber" style="margin-bottom:0">
+      <p class="cue" style="color:var(--amber)">"Pinch. Both feet press outward from center. Board stops spinning. You're on."</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- DRILLS -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal" data-nav="5">
+    <div class="section-label">Drills</div>
+    <h2>Four Drills to Wire It In</h2>
+    <p style="margin-bottom:14px;">Do these in order before every tre flip session. They build the muscle memory for the curl-hover-stomp sequence without the pressure of landing a full trick.</p>
+
+    <div class="drill-grid">
+      <div class="drill-card">
+        <h4>
+          <span class="truth-badge" style="background:var(--cyan);color:var(--bg);width:22px;height:22px;font-size:0.7rem;">1</span>
+          Stationary Ankle Roll
+          <span class="reps">20 reps</span>
+        </h4>
+        <p>Stand on the board. Front foot in flick position. Without popping, roll your ankle through the flick motion &mdash; toe drags off the edge at 12:30. Focus on what happens <strong>after</strong> the roll: your foot curls up, toes point down, foot pulls toward your knee. Practice the curl, not the flick.</p>
+      </div>
+
+      <div class="drill-card">
+        <h4>
+          <span class="truth-badge" style="background:var(--green);color:var(--bg);width:22px;height:22px;font-size:0.7rem;">2</span>
+          Hover Hold
+          <span class="reps">10 reps &times; 3 sec</span>
+        </h4>
+        <p>Stand on one foot (back foot on ground). Simulate the full flick motion with your front foot. After the "flick," <strong>hold the hover position for 3 seconds</strong> &mdash; toes pointed down, foot at knee height, directly above where the board would be. Build the muscle memory for that specific position.</p>
+      </div>
+
+      <div class="drill-card">
+        <h4>
+          <span class="truth-badge" style="background:var(--neon);color:var(--bg);width:22px;height:22px;font-size:0.7rem;">3</span>
+          The Stamp
+          <span class="reps">10 reps</span>
+        </h4>
+        <p>Pop a real tre flip. <strong>Don't try to land it.</strong> Your only goal is to get your front foot to make contact with the grip tape. Even if you step off with your back foot, even if you bail &mdash; the front foot must touch the board. Success = front foot touched grip. That's it.</p>
+      </div>
+
+      <div class="drill-card">
+        <h4>
+          <span class="truth-badge" style="background:var(--amber);color:var(--bg);width:22px;height:22px;font-size:0.7rem;">4</span>
+          One-Foot Catch
+          <span class="reps">10 reps</span>
+        </h4>
+        <p>Pop a regular kickflip. Catch it with <strong>only your front foot</strong> &mdash; back foot stays off the board or on the ground. This forces your front foot to find the deck and teaches it that the board is always right there. Builds catch confidence independent of the tre flip.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- FAIL MODES -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal">
+    <div class="section-label">When It Goes Wrong</div>
+    <h3>Front Foot Fail Modes</h3>
+    <div style="overflow-x:auto;">
+      <table class="fail-table">
+        <thead>
+          <tr>
+            <th>What Happens</th>
+            <th>Why</th>
+            <th>Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Front foot kicks straight out after flick</td>
+            <td style="color:var(--text-dim)">No curl phase &mdash; foot follows flick momentum outward. Shoulders may be rotating too.</td>
+            <td>"Flick to your knee." Redirect energy UP not OUT. Check shoulders.</td>
+          </tr>
+          <tr>
+            <td>Front foot is too high, misses the catch</td>
+            <td style="color:var(--text-dim)">Over-curling &mdash; foot went past the hover zone up toward your chest</td>
+            <td>Hover at nose height, not knee height. Shin angle stays consistent.</td>
+          </tr>
+          <tr>
+            <td>Front foot catches but slips off</td>
+            <td style="color:var(--text-dim)">Catching with your arch instead of the ball of your foot. No grind pinch.</td>
+            <td>Toes down in hover so ball makes first contact. Pinch immediately on catch.</td>
+          </tr>
+          <tr>
+            <td>Board does a full tre but foot is nowhere near it</td>
+            <td style="color:var(--text-dim)">Body drifted backward during scoop. You left the grid column.</td>
+            <td>Jump STRAIGHT UP. Ghost pulls you vertical. Stay over the bolts.</td>
+          </tr>
+          <tr>
+            <td>Catch the board but it's still spinning</td>
+            <td style="color:var(--text-dim)">Catching too early, before the full 360 completes</td>
+            <td>Wait for the grip tape flash. Trust peripheral vision. The board will come around.</td>
+          </tr>
+          <tr>
+            <td>Land but body is rotated 45&deg;+</td>
+            <td style="color:var(--text-dim)">Hips followed the scoop. Compartmentalization broke down.</td>
+            <td>Scoop stays in the back ankle ONLY. Hips are concrete. Belt buckle forward.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- THE MANTRA -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal">
+    <div class="section-label">The Mantra</div>
+    <div class="mantra-grid">
+      <div class="mantra-card">
+        <div class="label" style="color:var(--cyan)">Before</div>
+        <div class="phrase" style="color:var(--text-dim)">Three breaths.<br>Exhale is the go signal.<br>Shoulders concrete.<br>Eyes soft.</div>
+      </div>
+      <div class="mantra-card" style="border-color:rgba(57,255,20,0.15);">
+        <div class="label" style="color:var(--neon)">During</div>
+        <div class="phrase" style="color:var(--text-dim)">Tap.<br>Curl to your knee.<br>Toes down.<br>Hover.</div>
+      </div>
+      <div class="mantra-card">
+        <div class="label" style="color:var(--amber)">After</div>
+        <div class="phrase" style="color:var(--text-dim)">See grip, stomp.<br>Pinch.<br>Quiet landing.<br>You've done this 100 times.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- THE SHIFT -->
+  <!-- ═══════════════════════════════════════ -->
+  <section class="glass reveal">
+    <div class="callout callout-neon" style="margin:0;border-radius:var(--radius-sm);">
+      <h3 style="color:var(--neon);margin-bottom:6px;">The Shift of Knowing</h3>
+      <p>Tre flips have one of the most dramatic shifts in skateboarding. Dozens of failed attempts, then suddenly everything aligns and you land one clean. <strong>When it clicks, stop thinking.</strong> Don't analyze what changed. Land 10 more immediately. The first 20 reps after the shift are worth more than 100 before it.</p>
+      <p style="margin-top:8px;"><strong>You're the version of you who's landed 100 of these. Yawning.</strong></p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>built for the crooked setup / thunder 148s / bones swiss</p>
+    <p style="margin-top:4px;">april 2026 &mdash; brandon nye</p>
+  </footer>
+
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- JavaScript -->
+<!-- ═══════════════════════════════════════ -->
+<script>
+  // Scroll-driven reveal
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // Progress dots — scroll-linked
+  const navSections = document.querySelectorAll('[data-nav]');
+  const dots = document.querySelectorAll('.progress-dot');
+
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = parseInt(e.target.dataset.nav);
+        dots.forEach((dot, i) => {
+          const isActive = i === idx;
+          dot.classList.toggle('active', isActive);
+          dot.style.background = isActive ? dot.style.color : 'var(--text-muted)';
+        });
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '-10% 0px -60% 0px' });
+
+  navSections.forEach(el => navObserver.observe(el));
+
+  // Click to scroll
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      const target = document.querySelector(`[data-nav="${dot.dataset.section}"]`);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+
+</body>
+</html>
